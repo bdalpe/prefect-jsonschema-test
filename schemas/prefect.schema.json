@@ -2,7 +2,7 @@
   "title": "Prefect Deployment Schema",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "/schemas/prefect.schema.json",
+  "$id": "prefect.schema.json",
   "$defs": {
     "$build": {
       "type": "array",
@@ -20,10 +20,9 @@
       "type": "array",
       "items": {
         "type": "object",
-        "properties": {
-          "prefect_aws.deployments.steps.push_to_s3": {
-            "$ref": "/schemas/prefect_aws.schema.json"
-          }
+        "additionalProperties": {
+            "type": "object",
+            "$ref": "prefect_aws.schema.json"
         }
       }
     },

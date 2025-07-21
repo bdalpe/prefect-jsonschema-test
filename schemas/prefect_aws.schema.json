@@ -2,7 +2,7 @@
   "title": "Prefect AWS Deployment Schema",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "/schemas/prefect_aws.schema.json",
+  "$id": "prefect_aws.schema.json",
   "properties": {
     "id": {
       "type": "string"
