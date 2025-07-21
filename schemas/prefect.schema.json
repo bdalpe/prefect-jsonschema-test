@@ -2,7 +2,7 @@
   "title": "Prefect Deployment Schema",
   "type": "object",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "prefect.schema.json",
+  "$id": "https://raw.githubusercontent.com/bdalpe/prefect-jsonschema-test/refs/heads/main/schemas/prefect.schema.json",
   "$defs": {
     "$build": {
       "type": "array",
