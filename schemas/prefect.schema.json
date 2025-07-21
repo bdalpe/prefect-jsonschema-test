@@ -1,0 +1,212 @@
+{
+  "title": "Prefect Deployment Schema",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/schemas/prefect.schema.json",
+  "$defs": {
+    "$build": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "$pull": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "$push": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "prefect_aws.deployments.steps.push_to_s3": {
+            "$ref": "/schemas/prefect_aws.schema.json"
+          }
+        }
+      }
+    },
+    "$concurrency": {
+      "type": "object",
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "description": "The maximum number of concurrent flow runs for the deployment.",
+          "minimum": 0
+        },
+        "collision_strategy": {
+          "type": "string",
+          "description": "Configure the behavior for runs once the concurrency limit is reached. Options are `ENQUEUE`, and `CANCEL_NEW`. Defaults to `ENQUEUE`.",
+          "default": "ENQUEUE",
+          "enum": [
+            "ENQUEUE",
+            "CANCEL_NEW"
+          ]
+        }
+      }
+    },
+    "$deployment": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name to give to the created deployment. Used with the prefect `deploy command` to create or update specific deployments."
+        },
+        "version": {
+          "type": "string",
+          "description": "An optional version for the deployment."
+        },
+        "tags": {
+          "type": "array",
+          "description": "A list of strings to assign to the deployment as tags.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the deployment."
+        },
+        "schedule": {
+          "type": "object",
+          "$ref": "#/$defs/$schedule",
+          "description": "An optional [schedule](https://docs.prefect.io/v3/how-to-guides/automations/create-schedules) to assign to the deployment. Fields for this section are documented in the [Schedule Fields](https://docs.prefect.io/v3/how-to-guides/deployments/prefect-yaml#schedule-fields) section."
+        },
+        "concurrency_limit": {
+          "type": "integer",
+          "description": "The maximum number of concurrent runs for this deployment.",
+          "$ref": "#/$defs/$concurrency"
+        },
+        "triggers": {
+          "type": "array",
+          "description": "An optional array of [triggers](https://docs.prefect.io/v3/how-to-guides/automations/creating-deployment-triggers) to assign to the deployment",
+          "items": {
+            "type": "object",
+            "$ref": "#/$defs/$trigger"
+          }
+        },
+        "entrypoint": {
+          "type": "string",
+          "description": "Required path to the `.py` file containing the flow you want to deploy (relative to the root directory of your development folder) combined with the name of the flow function. In the format `path/to/file.py:flow_function_name`.",
+          "pattern": ".*\\.py:.*"
+        },
+        "parameters": {
+          "type": "object",
+          "description": "Optional default values to provide for the parameters of the deployed flow. Should be an object with key/value pairs."
+        },
+        "enforce_parameter_schema": {
+          "type": "boolean",
+          "description": "Boolean flag that determines whether the API should validate the parameters passed to a flow run against the parameter schema generated for the deployed flow."
+        },
+        "work_pool": {
+          "type": "object",
+          "$ref": "#/$defs/$work_pool"
+        }
+      },
+      "required": [
+        "name",
+        "entrypoint",
+        "work_pool"
+      ]
+    },
+    "$schedule": {
+      "type": "object",
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "description": "String name of a time zone, used to enforce localization behaviors like DST boundaries. See the [IANA Time Zone Database](https://www.iana.org/time-zones) for valid time zones."
+        },
+        "additionalProperties": false,
+        "oneOf": [
+          {
+            "required": [
+              "interval"
+            ],
+            "properties": {
+              "interval": {
+                "type": "string",
+                "description": "Number of seconds indicating the time between flow runs. Cannot use them in conjunction with `cron` or `rrule`."
+              },
+              "anchor_date": {
+                "type": "string",
+                "description": "Datetime string indicating the starting or “anchor” date to begin the schedule. If no `anchor_date` is supplied, the current UTC time is used. Can only use with `interval`."
+              }
+            }
+          },
+          {
+            "required": [
+              "cron"
+            ],
+            "properties": {
+              "cron": {
+                "type": "string",
+                "description": "A cron expression indicating the schedule for flow runs. Cannot use them in conjunction with `interval` or `rrule`."
+              },
+              "day_or": {
+                "type": "boolean",
+                "description": "Boolean indicating how croniter handles day and day_of_week entries. Must use with `cron`. Defaults to `True`."
+              }
+            }
+          },
+          {
+            "required": [
+              "rrule"
+            ],
+            "properties": {
+              "rrule": {
+                "type": "string",
+                "description": "String representation of an RRule schedule. See the [`rrulestr` examples](https://dateutil.readthedocs.io/en/stable/rrule.html#rrulestr-examples) for syntax. Cannot used them in conjunction with `interval` or `cron`."
+              }
+            }
+          }
+        ]
+      }
+    },
+    "$trigger": {},
+    "$work_pool": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the work pool to use for this deployment."
+        },
+        "work_queue_name": {
+          "type": "string",
+          "description": "The type of work pool (e.g., 'prefect:work-queue')."
+        },
+        "job_variables": {
+          "type": "object",
+          "description": "Values used to override the default values in the specified work pool’s [base job template](https://docs.prefect.io/v3/concepts/work-pools#base-job-template). Maps directly to a created deployments `infra_overrides` attribute."
+        }
+      },
+      "required": [
+        "name"
+      ]
+    }
+  },
+  "properties": {
+    "build": {
+      "$ref": "#/$defs/$build"
+    },
+    "push": {
+      "$ref": "#/$defs/$push"
+    },
+    "pull": {
+      "$ref": "#/$defs/$pull"
+    },
+    "definitions": {
+      "type": "object"
+    },
+    "deployments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#/$defs/$deployment"
+      }
+    }
+  },
+  "required": [
+    "deployments"
+  ]
+}
