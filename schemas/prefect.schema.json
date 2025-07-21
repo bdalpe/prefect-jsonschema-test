@@ -23,7 +23,7 @@
         "properties": {
           "prefect_aws.deployments.steps.push_to_s3": {
             "type": "object",
-            "$ref": "prefect_aws.schema.json#/definitions/prefect_aws.deployments.steps.push_to_s3"
+            "$ref": "../subdir/prefect_aws.schema.json#/definitions/prefect_aws.deployments.steps.push_to_s3"
           }
         }
       }

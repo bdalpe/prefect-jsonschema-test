@@ -1,0 +1,33 @@
+{
+  "title": "Prefect AWS Deployment Schema",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "subdir/prefect_aws.schema.json",
+  "definitions": {
+    "prefect_aws.deployments.steps.push_to_s3": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "requires": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string",
+          "description": "The name of the S3 bucket to push the deployment to."
+        },
+        "folder": {
+          "type": "string",
+          "description": "The folder within the S3 bucket to push the deployment to. Defaults to the root of the bucket."
+        },
+        "credentials": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "bucket",
+        "credentials"
+      ]
+    }
+  }
+}
